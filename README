@@ -3,6 +3,6 @@ An implementation of the following clustering algorithms in Ruby:
 - DBscan
 - SUBCLU
 
-When using DBscan the distance measure has to be parameterised to specify which attrtibutes will be considered.
+When using DBscan the distance measure has to be parameterised to specify which attributes should be considered.
 
 See main.rb on how to use the algorithms and what the input data should look like.
