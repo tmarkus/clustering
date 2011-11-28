@@ -9,7 +9,7 @@ class SUBCLU
 	end
 
 	#cluster in the first dimension
-	def subclu1(db, eps, min_pts)
+	def subclu1(db, eps, min_pts, dimension_blacklist)
 
 		c_and_s = Hash.new
 		attributes = []; db.first.each_index {|attribute| attributes.push Set.new([attribute])}
@@ -18,14 +18,14 @@ class SUBCLU
 			dbscan = DBscan.new( @measure.new(attribute) )
 			c_a = dbscan.run(db, eps, min_pts)
 
-			if not c_a.empty?
+			if  !c_a.empty? && !dimension_blacklist.include?(attribute.to_a.first)
 				c_and_s[ attribute ] = c_a
 			end
 		end
 		return c_and_s
 	end
 
-	def generate_candidate_subspaces(c_and_s)
+	def generate_candidate_subspaces(c_and_s, dimension_blacklist)
 
 		c_and_s_next = Hash.new
 
@@ -34,7 +34,7 @@ class SUBCLU
 			c_and_s.each_key do |s_2|
 				if (s_1-s_2).size == 1
 					subspace = s_1+s_2				
-					if (!filter_subspace?(subspace, c_and_s))
+					if ( (dimension_blacklist - subspace.to_a).eql?(dimension_blacklist) && !filter_subspace?(subspace, c_and_s))
 						c_and_s_next[(subspace)] = []  # clusters in higher subspace aren't yet known
 					end
 				end
@@ -56,15 +56,15 @@ class SUBCLU
 	end
 
 	#main method
-	def run(db, eps, min_pts)
+	def run(db, eps, min_pts, max_dimensions = 1, dimension_blacklist = [])
 		results = []
 	
 		#cluster all subspaces in one dimension
-		c_and_s = subclu1(db, eps, min_pts)	
+		c_and_s = subclu1(db, eps, min_pts, dimension_blacklist)	
 		results.push c_and_s
 	
-		while not c_and_s.empty?
-			c_and_s_next = generate_candidate_subspaces(c_and_s)
+		while !c_and_s.empty? && results.size < max_dimensions
+			c_and_s_next = generate_candidate_subspaces(c_and_s, dimension_blacklist)
 			c_and_s_next.each_pair do |subspace, clusters|
 				best_subspace = nil
 				best_subspace_cluster_count = (2**(0.size * 8 -2) -1) # maximum fixnum value

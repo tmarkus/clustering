@@ -33,7 +33,7 @@ result = subclu.run(db, EPS, MIN_PTS)
 
 result.each_index do |dim|
 	
-	puts "DIMENSION: #{dim}"
+	puts "DIMENSIONALITY: #{dim+1}"
 	
 	result[dim].each_pair do |subspace, clusters|
 		puts "		#{subspace.inspect}"
