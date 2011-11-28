@@ -56,7 +56,7 @@ class SUBCLU
 	end
 
 	#main method
-	def run(db, eps, min_pts, max_dimensions = 1, dimension_blacklist = [])
+	def run(db, eps, min_pts, max_dimensions = 5, dimension_blacklist = [])
 		results = []
 	
 		#cluster all subspaces in one dimension
@@ -81,14 +81,17 @@ class SUBCLU
 				c_and_s[best_subspace].each do |cl|
 					dbscan = DBscan.new( @measure.new(subspace) )
 					clusters += dbscan.run(cl, eps, min_pts)
-				
+					
 					if not clusters.empty?
 						c_and_s_next[subspace] = clusters
+					else
+						c_and_s_next.delete(subspace)
 					end
 				end
 			end
+
+			results.push c_and_s_next if not c_and_s_next.empty?
 			c_and_s = c_and_s_next
-			results.push c_and_s if not c_and_s.empty?
 		end		
 		return results
 	end
