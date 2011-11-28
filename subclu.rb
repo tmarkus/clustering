@@ -16,7 +16,7 @@ class SUBCLU
 
 		attributes.each do |attribute|
 			dbscan = DBscan.new( @measure.new(attribute) )
-			c_a = dbscan.run(db, eps, min_pts)	
+			c_a = dbscan.run(db, eps, min_pts)
 
 			if not c_a.empty?
 				c_and_s[ attribute ] = c_a
@@ -33,25 +33,29 @@ class SUBCLU
 		c_and_s.each_key do |s_1|
 			c_and_s.each_key do |s_2|
 				if (s_1-s_2).size == 1
-					c_and_s_next[(s_1 + s_2)] = []  # clusters in higher subspace aren't yet known
+					subspace = s_1+s_2				
+					if (!filter_subspace?(subspace, c_and_s))
+						c_and_s_next[(subspace)] = []  # clusters in higher subspace aren't yet known
+					end
 				end
-			end
-		end
-
-		#filter subspaces
-		c_and_s_next.each_pair do |subspace, points|
-			subspace.each do |dim|
-				s_k = subspace - [dim]
-				if c_and_s[s_k] == nil || c_and_s[s_k].empty?
-					c_and_s_next.delete(subspace)
-				end		
 			end
 		end
 
 		return c_and_s_next
 	end
 
+	#filter subspaces
+	def filter_subspace?(subspace, c_and_s)
+		subspace.each do |dim|
+			s_k = subspace - [dim]
+			if c_and_s[s_k] == nil || c_and_s[s_k].empty?
+				return true
+			end		
+		end
+		return false
+	end
 
+	#main method
 	def run(db, eps, min_pts)
 		results = []
 	
@@ -59,10 +63,7 @@ class SUBCLU
 		c_and_s = subclu1(db, eps, min_pts)	
 		results.push c_and_s
 	
-	
-		#puts  results.inspect
 		while not c_and_s.empty?
-		
 			c_and_s_next = generate_candidate_subspaces(c_and_s)
 			c_and_s_next.each_pair do |subspace, clusters|
 				best_subspace = nil
@@ -79,7 +80,7 @@ class SUBCLU
 				clusters = []
 				c_and_s[best_subspace].each do |cl|
 					dbscan = DBscan.new( @measure.new(subspace) )
-					clusters += dbscan.run(cl, EPS, MIN_PTS)
+					clusters += dbscan.run(cl, eps, min_pts)
 				
 					if not clusters.empty?
 						c_and_s_next[subspace] = clusters
