@@ -27,7 +27,7 @@ dbscan = DBscan.new(EuclideanDistance.new(all_attribute_indices))
 result = dbscan.run(db, EPS, MIN_PTS)
 
 #test run of subclu, which outputs all possibilities for projected clustering
-subclu = SUBCLU.new(EuclideanDistance)
+subclu = SUBCLU.new(JensenShannonDistance)
 result = subclu.run(db, EPS, MIN_PTS)
 
 result.each_index do |dim|

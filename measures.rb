@@ -20,3 +20,18 @@ class EuclideanDistance < AbstractMeasure
 	  Math.sqrt( sum_of_squares )
 	end
 end
+
+class JensenShannonDistance < AbstractMeasure
+	def distance(p1, p2)
+		m = []
+		p1.each_index {|i| m[i] = (p1[i]+p2[i]) / 2 }
+
+		return ( 0.5*kl(p1, m) + 0.5*kl(p2, m) )
+	end
+
+	def kl(p1, p2)
+		sum = 0.0
+		p1.each_index {|i| sum += p1[i] * Math.log( p1[i] / p2[i] ) }
+		return sum
+	end
+end
