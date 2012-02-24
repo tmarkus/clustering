@@ -25,22 +25,16 @@ class JensenShannonDistance < AbstractMeasure
 	def distance(p1, p2)
 		m = []
 		p1.each_index {|i| m[i] = (p1[i]+p2[i]) / 2 }
-
-#		puts ( 0.5*kl(p1, m) + 0.5*kl(p2, m) )
-
 		return ( 0.5*kl(p1, m) + 0.5*kl(p2, m) )
 	end
 
 	def kl(p1, p2)
 		sum = 0.0
 		p1.each_index do |i|
-			
 			if (p1[i] > 0)
 				sum += p1[i] * Math.log( p1[i] / p2[i] )
 			end
-			
 		end		
-		
 		return sum
 	end
 end
