@@ -15,12 +15,14 @@ class SUBCLU
 		attributes = []; db.first.each_index {|attribute| attributes.push Set.new([attribute])}
 
 		attributes.each do |attribute|
-			dbscan = DBscan.new( @measure.new(attribute) )
-			c_a = dbscan.run(db, eps, min_pts)
+			if !dimension_blacklist.include?(attribute.to_a.first)
+				dbscan = DBscan.new( @measure.new(attribute) )
+				c_a = dbscan.run(db, eps, min_pts)
 
-			if  !c_a.empty? && !dimension_blacklist.include?(attribute.to_a.first)
-				c_and_s[ attribute ] = c_a
-			end
+				if  !c_a.empty?
+					c_and_s[ attribute ] = c_a
+				end
+			end		
 		end
 		return c_and_s
 	end
@@ -65,6 +67,10 @@ class SUBCLU
 	
 		while !c_and_s.empty? && results.size < max_dimensions
 			c_and_s_next = generate_candidate_subspaces(c_and_s, dimension_blacklist)
+			
+			
+			to_add_to_c_and_s_next = Hash.new
+			to_remove_to_c_and_s_next = []
 			c_and_s_next.each_pair do |subspace, clusters|
 				best_subspace = nil
 				best_subspace_cluster_count = (2**(0.size * 8 -2) -1) # maximum fixnum value
@@ -83,12 +89,21 @@ class SUBCLU
 					clusters += dbscan.run(cl, eps, min_pts)
 					
 					if not clusters.empty?
-						c_and_s_next[subspace] = clusters
+						to_add_to_c_and_s_next[subspace] = clusters
 					else
-						c_and_s_next.delete(subspace)
+						to_remove_c_and_s_next.push(subspace)
 					end
 				end
 			end
+
+			to_add_to_c_and_s_next.each_pair do |subspace, clusters|
+				c_and_s_next[subspace] = clusters
+			end
+
+			to_remove_to_c_and_s_next.each do |subspace|
+				c_and_s_next.delete(subspace)
+			end
+
 
 			results.push c_and_s_next if not c_and_s_next.empty?
 			c_and_s = c_and_s_next

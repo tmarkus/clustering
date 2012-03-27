@@ -31,8 +31,10 @@ class JensenShannonDistance < AbstractMeasure
 	def kl(p1, p2)
 		sum = 0.0
 		p1.each_index do |i|
-			if (p1[i] > 0)
-				sum += p1[i] * Math.log( p1[i] / p2[i] )
+			if (@attributes.include?(i))
+				if (p1[i] > 0)
+					sum += p1[i] * Math.log( p1[i] / p2[i] )
+				end
 			end
 		end		
 		return sum
