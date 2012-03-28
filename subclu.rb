@@ -70,7 +70,7 @@ class SUBCLU
 			
 			
 			to_add_to_c_and_s_next = Hash.new
-			to_remove_to_c_and_s_next = []
+			to_remove_c_and_s_next = []
 			c_and_s_next.each_pair do |subspace, clusters|
 				best_subspace = nil
 				best_subspace_cluster_count = (2**(0.size * 8 -2) -1) # maximum fixnum value
@@ -100,7 +100,7 @@ class SUBCLU
 				c_and_s_next[subspace] = clusters
 			end
 
-			to_remove_to_c_and_s_next.each do |subspace|
+			to_remove_c_and_s_next.each do |subspace|
 				c_and_s_next.delete(subspace)
 			end
 
