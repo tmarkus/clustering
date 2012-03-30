@@ -12,6 +12,7 @@ class DBscan
 				neighborhood.push p_prime
 			end
 		end	
+		
 		return neighborhood
 	end
 
@@ -21,6 +22,7 @@ class DBscan
 			info[p] = :visited		
 		
 			n = neighbors(db, info, p, eps)
+			
 			if n.size >= min_pts
 				n.each do |p_prime|
 					if not c.map{|c_prime| c_prime.include? p_prime}.include?(true) #not contained in any cluster?

@@ -42,7 +42,7 @@ class SUBCLU
 				end
 			end
 		end
-
+		
 		return c_and_s_next
 	end
 
@@ -59,6 +59,8 @@ class SUBCLU
 
 	#main method
 	def run(db, eps, min_pts, max_dimensions = 5, dimension_blacklist = [])
+		dimension_blacklist = Set.new(dimension_blacklist)
+		
 		results = []
 	
 		#cluster all subspaces in one dimension
